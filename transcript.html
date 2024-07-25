@@ -12,6 +12,29 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.js"></script>
   <script src="https://platform.twitter.com/widgets.js"></script>
   <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      .box {
+        display: flex;
+        flex-flow: column;
+        height: 100%;
+      }
+      .box .row {
+        border: 1px dotted #0313fc;
+      }
+      .box .row.header {
+        flex: 0 1 auto;
+      }
+      .box .row.content {
+        flex: 1 1 auto;
+        overflow-y: scroll;
+      }
+      .box .row.footer {
+        flex: 0 1 40px;
+      }
     /* uncomment the following CSS for active parent / word indicator */ 
     
     .hyperaudio-transcript .active{
@@ -23,18 +46,11 @@
       text-decoration:  #00f underline;
       text-decoration-thickness: 3px;
     }
-  header {
-  position: sticky;
-  top:0;
-  background: lightgray;
-  padding:40px;
-  text-align: center;
-  z-index: 99;
-  }  
   </style>
 </head>
 <body>
-	<header>
+    <div class="box">
+      <div id="header" class="row header">
   <p>
     <form id="searchForm" style="float:right">
       <!-- comment out the following line if you don't need playback rate controls -->
@@ -61,7 +77,8 @@
   <!-- <iframe id="hyperplayer" data-player-type="youtube" width="400" height="300" frameborder="no" allow="autoplay"
     src="https://www.youtube.com/embed/xLcsdc823dg?enablejsapi=1">
   </iframe> -->
-	</header>
+	</div>
+        <div id="scrolling_div" class="row content">
   <div id="hypertranscript" class="hyperaudio-transcript" style="/*overflow-y:scroll; height:600px; */position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
   </div>
   <script src="js/hyperaudio-lite.js"></script>
@@ -146,7 +163,7 @@
 
 
 	
-  new HyperaudioLite("hypertranscript", "hyperplayer","", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
+  new HyperaudioLite("hypertranscript", "hyperplayer","scrolling_div", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 
   // Override scroll parameters
   //ht1.setScrollParameters(<duration>, <delay>, <offset>, <container>);
@@ -155,5 +172,12 @@
   let cap1 = caption();
   cap1.init("hypertranscript", "hyperplayer", '37' , '21'); // transcript Id, player Id, max chars, min chars for caption line
   </script>
+
+	</div>
+      <div class="row footer">
+        <p>footer (fixed height)</p>
+      </div>
+    </div>
+	    
 </body>
 </html>
