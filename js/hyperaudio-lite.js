@@ -277,7 +277,11 @@ function hyperaudioPlayer(playerType, instance) {
 class HyperaudioLite {
   constructor(transcriptId, mediaElementId, scrollerContainerID, minimizedMode, autoscroll, doubleClick, webMonetization, playOnClick) {
     this.transcript = document.getElementById(transcriptId);
-    this.scrollerContainer = document.getElementById(scrollerContainerID); // this.transcript;
+    if (scrollerContainerID.length > 0) {
+      this.scrollerContainer = document.getElementById(scrollerContainerID); // this.transcript;}
+    } else {
+      this.scrollerContainer=null;
+    }
     this.init(mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization, playOnClick);
   }
 
