@@ -23,10 +23,17 @@
       text-decoration:  #00f underline;
       text-decoration-thickness: 3px;
     }
-    
+  header {
+  position: sticky;
+  top:0;
+  background: lightgray;
+  padding:40px;
+  text-align: center;
+  }  
   </style>
 </head>
 <body>
+	<header>
   <p>
     <form id="searchForm" style="float:right">
       <!-- comment out the following line if you don't need playback rate controls -->
@@ -53,7 +60,7 @@
   <!-- <iframe id="hyperplayer" data-player-type="youtube" width="400" height="300" frameborder="no" allow="autoplay"
     src="https://www.youtube.com/embed/xLcsdc823dg?enablejsapi=1">
   </iframe> -->
-
+	</header>
   <div id="hypertranscript" class="hyperaudio-transcript" style="overflow-y:scroll; height:600px; position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
   </div>
   <script src="js/hyperaudio-lite.js"></script>
