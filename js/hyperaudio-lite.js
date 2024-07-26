@@ -583,10 +583,10 @@ class HyperaudioLite {
     let newPara = false;
     let scrollNode = this.wordArr[index - 1].n.parentNode;
 
-    if (scrollNode !== null && scrollNode.tagName != 'P') {
+    //if (scrollNode !== null && scrollNode.tagName != 'P') {
       // it's not inside a para so just use the element
       scrollNode = this.wordArr[index - 1].n;
-    }
+    //}
 
     if (currentParentElementIndex != this.parentElementIndex) {
 
