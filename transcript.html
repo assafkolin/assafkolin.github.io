@@ -30,7 +30,7 @@
       }
       .box .row.content {
         flex: 1 1 auto;
-        overflow-y: scroll;
+      /*  overflow-y: scroll;*/
       }
       .box .row.footer {
         flex: 0 1 40px;
@@ -79,7 +79,7 @@
   </iframe> -->
 	</div>
         <div id="scrolling_div" class="row content">
-  <div id="hypertranscript" class="hyperaudio-transcript" style="/*overflow-y:scroll; height:600px; */position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
+  <div id="hypertranscript" class="hyperaudio-transcript" style="overflow-y:scroll; height:100% /*600px; */position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
   </div>
   <script src="js/hyperaudio-lite.js"></script>
   <script src="js/hyperaudio-lite-extension.js"></script>
@@ -163,7 +163,7 @@
 
 
 	
-  new HyperaudioLite("hypertranscript", "hyperplayer","scrolling_div", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
+  new HyperaudioLite("hypertranscript", "hyperplayer","hypertranscript", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 
   // Override scroll parameters
   //ht1.setScrollParameters(<duration>, <delay>, <offset>, <container>);
