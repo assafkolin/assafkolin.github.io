@@ -6,7 +6,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Hyperaudio - BBCRD | Education | Ethics of personal data in the era of QS and IoT</title>
+  <title>Transcript : </title>
   <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
   <link rel="stylesheet" href="css/share-this.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.js"></script>
@@ -115,6 +115,7 @@
 	}
 	const urlParams = new URLSearchParams(window.location.search);
 	const media_name = urlParams.get('media_name');
+  document.title += ': ' + media_name 
 	var file_name=removeExtension(media_name)+'.srt';
 	var srtContent = await load(file_name);
 	var final_content=parseSRT(srtContent,media_name,2.0,false,true,false)//(data,media_name,paraSplitTime,paraPunct,lineBreaks,wordLengthSplit);
@@ -158,6 +159,7 @@
 			el.setAttribute('src','');
 			el.setAttribute('type','');
 			el.setAttribute('controls','');
+			el.setAttribute('autoplay','');
     // document.body.insertBefore(el, document.getElementById('hypertranscript'))
     document.getElementById("header").appendChild(el);
 
