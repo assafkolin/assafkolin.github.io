@@ -35,6 +35,13 @@
       .box .row.footer {
         flex: 0 1 40px;
       }
+      audio::-webkit-media-controls-play-button {
+        transform: scale(2, 2);
+     }
+     audio::-webkit-media-controls-timeline {
+      height: 20px;
+      transform: scale(1, 1.5);  
+     }
     /* uncomment the following CSS for active parent / word indicator */ 
     
     .hyperaudio-transcript .active{
@@ -155,7 +162,7 @@
     };
 			el.setAttribute('id','hyperplayer');
 			el.setAttribute('class','hyperaudio-player');
-			el.setAttribute('style','z-index: 5000000; position:relative; width:800px;scale');
+			el.setAttribute('style','z-index: 5000000; position:relative; width:400px;scale');
 			el.setAttribute('src','');
 			el.setAttribute('type','');
 			el.setAttribute('controls','');
