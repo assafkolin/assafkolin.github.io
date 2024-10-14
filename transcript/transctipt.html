@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Audio/Video and SRT Player</title>
+    <style>
+        /* Basic layout with header, scrollable body, and footer */
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+            flex: 0 0 auto; /* Prevent shrinking */
+            border-bottom: 1px solid #ccc;
+        }
+
+        #body {
+            flex: 1 1 auto; /* Grow and shrink as needed */
+            overflow-y: auto; /* Make it scrollable */
+            padding: 15px;
+			font-family: sans-serif;
+        }
+
+        #footer {
+            background-color: #f1f1f1;
+            padding: 20px;
+            flex: 0 0 auto; /* Prevent shrinking */
+            border-top: 1px solid #ccc;
+            text-align: center;
+        }
+
+        /* Subtitle styling */
+        .subtitle-block {
+            display: inline; /* Inline to keep them in the same paragraph */
+            margin-right: 5px; /* Add space between concatenated subtitles */
+            cursor: pointer; /* Indicate clickable subtitles */
+        }
+
+        .active-subtitle {
+            background-color: yellow;
+            color: black;
+        }
+
+        .paragraph-break {
+            display: block;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header section with filename and audio/video player -->
+    <div id="header">
+        <h1 id="fileTitle">Subtitle Player</h1>
+        <!-- Video player placeholder -->
+        <video id="videoPlayer" controls style="display:none; width: 100%; max-width: 600px;">
+            Your browser does not support the video element.
+        </video>
+        <!-- Audio player placeholder -->
+        <audio id="audioPlayer" controls style="display:none; width: 100%; max-width: 600px;">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+
+    <!-- Body section with scrollable subtitles -->
+    <div id="body">
+        <div id="output"></div>
+    </div>
+
+    <!-- Footer section, reserved for future use -->
+    <div id="footer">
+        Auto Transcript, The body text and the player are synched
+    </div>
+
+    <script>
+        // Utility to get URL parameters
+        function getURLParameter(name, defaultValue = null) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.has(name) ? urlParams.get(name) : defaultValue;
+        }
+
+        // Function to convert SRT time (hh:mm:ss,ms) to seconds
+        function timeToSeconds(timeStr) {
+            const parts = timeStr.split(':');
+            const hours = parseInt(parts[0], 10);
+            const minutes = parseInt(parts[1], 10);
+            const secondsParts = parts[2].split(',');
+            const seconds = parseInt(secondsParts[0], 10);
+            const milliseconds = parseInt(secondsParts[1], 10);
+
+            return hours * 3600 + minutes * 60 + seconds + milliseconds / 1000;
+        }
+
+        // Function to parse the SRT file content
+        function parseSRT(srtContent) {
+            const subtitleText = [];
+            const startTime = [];
+            const endTime = [];
+
+            const blocks = srtContent.replace(/\r\n/g, '\n').split(/\n{2,}/);
+
+            blocks.forEach((block) => {
+                const lines = block.trim().split('\n');
+                
+                if (lines.length >= 3) {
+                    const timeCode = lines[1].trim();
+                    const timeMatch = timeCode.match(/(\d{2}:\d{2}:\d{2},\d{3}) \-\-> (\d{2}:\d{2}:\d{2},\d{3})/);
+
+                    if (timeMatch) {
+                        startTime.push(timeToSeconds(timeMatch[1]));
+                        endTime.push(timeToSeconds(timeMatch[2]));
+                    }
+
+                    const text = lines.slice(2).join(' ');
+                    subtitleText.push(text);
+                }
+            });
+
+            return { subtitleText, startTime, endTime };
+        }
+
+        // Function to load and display the SRT file
+        function loadSRTFile(srtFilePath, paragraphGap) {
+            fetch(srtFilePath)
+                .then(response => response.text())
+                .then(srtContent => {
+                    const parsedSubtitles = parseSRT(srtContent);
+                    const outputDiv = document.getElementById('output');
+                    outputDiv.innerHTML = ''; 
+
+                    let paragraphContainer = document.createElement('div');
+
+                    for (let i = 0; i < parsedSubtitles.subtitleText.length; i++) {
+                        const subtitleDiv = document.createElement('div');
+                        subtitleDiv.classList.add('subtitle-block');
+                        subtitleDiv.textContent = parsedSubtitles.subtitleText[i];
+                        subtitleDiv.id = `subtitle-${i}`;
+                        subtitleDiv.dataset.startTime = parsedSubtitles.startTime[i];
+                        subtitleDiv.dataset.endTime = parsedSubtitles.endTime[i];
+
+                        subtitleDiv.addEventListener('click', () => {
+                            const mediaPlayer = getActiveMediaPlayer();
+                            if (mediaPlayer) {
+                                mediaPlayer.currentTime = parsedSubtitles.startTime[i];
+                                mediaPlayer.play();
+                            }
+                        });
+
+                        paragraphContainer.appendChild(subtitleDiv);
+
+                        if (i < parsedSubtitles.subtitleText.length - 1) {
+                            const gap = parsedSubtitles.startTime[i + 1] - parsedSubtitles.endTime[i];
+                            if (gap > paragraphGap) {
+                                paragraphContainer.classList.add('paragraph-break');
+                                outputDiv.appendChild(paragraphContainer);
+                                paragraphContainer = document.createElement('div');
+                            }
+                        }
+                    }
+
+                    if (paragraphContainer.children.length > 0) {
+                        paragraphContainer.classList.add('paragraph-break');
+                        outputDiv.appendChild(paragraphContainer);
+                    }
+
+                    highlightActiveSubtitle(parsedSubtitles);
+                })
+                .catch(error => console.error('Error loading SRT file:', error));
+        }
+
+        // Function to highlight the active subtitle and auto-scroll
+        function highlightActiveSubtitle(parsedSubtitles) {
+            const mediaPlayer = getActiveMediaPlayer();
+            const bodyDiv = document.getElementById('body');
+
+            setInterval(() => {
+                if (!mediaPlayer) return;
+                const currentTime = mediaPlayer.currentTime;
+
+                for (let i = 0; i < parsedSubtitles.startTime.length; i++) {
+                    const subtitleDiv = document.getElementById(`subtitle-${i}`);
+                    const start = parsedSubtitles.startTime[i];
+                    const end = parsedSubtitles.endTime[i];
+
+                    if (currentTime >= start && currentTime <= end) {
+                        subtitleDiv.classList.add('active-subtitle');
+                        subtitleDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        subtitleDiv.classList.remove('active-subtitle');
+                    }
+                }
+            }, 100);
+        }
+
+        // Function to get the active media player (audio or video)
+        function getActiveMediaPlayer() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            const videoPlayer = document.getElementById('videoPlayer');
+
+            if (videoPlayer.style.display !== 'none' && videoPlayer.src) {
+                return videoPlayer;
+            } else if (audioPlayer.style.display !== 'none' && audioPlayer.src) {
+                return audioPlayer;
+            }
+            return null; // No active player found
+        }
+
+        // Main script execution
+        document.addEventListener('DOMContentLoaded', () => {
+            const audioFilename = getURLParameter('audio');
+            const videoFilename = getURLParameter('video');
+            const paragraphGap = parseFloat(getURLParameter('gap', 1.0));
+            const textDirection = getURLParameter('dir', 'rtl');
+
+            const bodyDiv = document.getElementById('body');
+            bodyDiv.setAttribute('dir', textDirection);
+
+            if (audioFilename) {
+                // Set up audio player
+                const audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.style.display = 'block';
+                audioPlayer.src = `${audioFilename}`;
+                
+                const fileTitle = document.getElementById('fileTitle');
+                fileTitle.textContent = `Playing Audio: ${audioFilename}`;
+
+                //const srtFilename = audioFilename.replace('.mp3', '.srt');
+				const srtFilename = audioFilename.substr(0, audioFilename.lastIndexOf(".")) + ".srt";
+                loadSRTFile(srtFilename, paragraphGap);
+            } else if (videoFilename) {
+                // Set up video player
+                const videoPlayer = document.getElementById('videoPlayer');
+                videoPlayer.style.display = 'block';
+                videoPlayer.src = `${videoFilename}`;
+                
+                const fileTitle = document.getElementById('fileTitle');
+                fileTitle.textContent = `Playing Video: ${videoFilename}`;
+
+                //const srtFilename = videoFilename.replace('.mp4', '.srt');
+				const srtFilename = videoFilename.substr(0, videoFilename.lastIndexOf(".")) + ".srt";
+                loadSRTFile(srtFilename, paragraphGap);
+            }
+        });
+    </script>
+
+</body>
+</html>
