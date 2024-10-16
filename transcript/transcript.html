@@ -12,6 +12,9 @@
             height: 100vh;
             margin: 0;
         }
+		h1 {
+		  font-size: 1.5em;
+		}
 
         #header {
             background-color: #f8f9fa;
@@ -19,6 +22,7 @@
             text-align: center;
             flex: 0 0 auto; /* Prevent shrinking */
             border-bottom: 1px solid #ccc;
+			font-family: sans-serif;
         }
 
         #body {
@@ -34,6 +38,7 @@
             flex: 0 0 auto; /* Prevent shrinking */
             border-top: 1px solid #ccc;
             text-align: center;
+			font-family: sans-serif;
         }
 
         /* Subtitle styling */
@@ -214,22 +219,44 @@
 
         // Main script execution
         document.addEventListener('DOMContentLoaded', () => {
+		    var userLang = navigator.language || navigator.userLanguage;
+			var defaul_dir='ltr';
+			if (['he-IL'].includes(userLang)) {
+			  defaul_dir='rtl'
+			}
             const audioFilename = getURLParameter('audio');
             const videoFilename = getURLParameter('video');
-            const paragraphGap = parseFloat(getURLParameter('gap', 1.0));
-            const textDirection = getURLParameter('dir', 'rtl');
+            const paragraphGap = parseFloat(getURLParameter('gap', 1.5));
+            const textDirection = getURLParameter('dir', defaul_dir);
 
             const bodyDiv = document.getElementById('body');
             bodyDiv.setAttribute('dir', textDirection);
 
+			const fileTitle = document.getElementById('fileTitle');
+			const footer = document.getElementById('footer');
+			const title = document.getElementsByTagName('title')[0];
+			footer.setAttribute('dir', textDirection);
+			fileTitle.setAttribute('dir', textDirection);
+			if (userLang=='he-IL') {
+			  footer.textContent = "נגן מתומלל: התמליל מסונכרן עם הנגן";
+			  title.textContent='נגן אודיו/וידאו המציג קבצי כתוביות';
+			} else {
+			  footer.textContent = 'Auto Transcript, The body text and the player are synched';
+			}
             if (audioFilename) {
                 // Set up audio player
                 const audioPlayer = document.getElementById('audioPlayer');
                 audioPlayer.style.display = 'block';
                 audioPlayer.src = `${audioFilename}`;
                 
-                const fileTitle = document.getElementById('fileTitle');
-                fileTitle.textContent = `Playing Audio: ${audioFilename}`;
+				fileTitle.setAttribute('dir', textDirection);
+				if (userLang=='he-IL') {
+                  fileTitle.textContent = "כעת מנגן: "+audioFilename;
+				  title.textContent='נגן אודיו המציג קבצי כתוביות: '+audioFilename.substr(0, audioFilename.lastIndexOf("."));
+				} else {
+                  fileTitle.textContent = 'Playing Audio: '+audioFilename;
+				  title.textContent='Dynamic Audio and SRT Player: '+audioFilename.substr(0, audioFilename.lastIndexOf("."));
+				}
 
                 //const srtFilename = audioFilename.replace('.mp3', '.srt');
 				const srtFilename = audioFilename.substr(0, audioFilename.lastIndexOf(".")) + ".srt";
@@ -240,8 +267,14 @@
                 videoPlayer.style.display = 'block';
                 videoPlayer.src = `${videoFilename}`;
                 
-                const fileTitle = document.getElementById('fileTitle');
-                fileTitle.textContent = `Playing Video: ${videoFilename}`;
+				fileTitle.setAttribute('dir', textDirection);
+				if (userLang=='he-IL') {
+                  fileTitle.textContent = "כעת מנגן: "+videoFilename;
+				  title.textContent='נגן וידאו המציג קבצי כתוביות: '+videoFilename.substr(0, videoFilename.lastIndexOf("."));
+				} else {
+                  fileTitle.textContent = 'Playing Video: '+videoFilename;
+				  title.textContent='Dynamic Video and SRT Player: '+videoFilename.substr(0, videoFilename.lastIndexOf("."));
+				}
 
                 //const srtFilename = videoFilename.replace('.mp4', '.srt');
 				const srtFilename = videoFilename.substr(0, videoFilename.lastIndexOf(".")) + ".srt";
