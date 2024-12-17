@@ -208,7 +208,15 @@
                     
                         if (subtitleDiv.classList.contains('filtered-subtitle')) {
                             subtitleDiv.classList.remove('active-subtitle');
-                            mediaPlayer.currentTime = parsedSubtitles.endTime[i]
+							let tmpTime=parsedSubtitles.endTime[parsedSubtitles.startTime.length-1]
+							for (let j = i; j < parsedSubtitles.startTime.length; j++) {
+								if (!document.getElementById(`subtitle-${j}`).classList.contains('filtered-subtitle')) {
+									tmpTime=parsedSubtitles.startTime[j];
+									break;
+								}
+							}
+							
+                            mediaPlayer.currentTime = tmpTime;//parsedSubtitles.endTime[i]
                         } else {
                             subtitleDiv.classList.add('active-subtitle');
                             subtitleDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -242,15 +250,11 @@
         //        console.error("No subtitles found to filter!");
                 return;
             }
-                                                                 
-                                                                                             
-                                                                                         
 
             // Parse the filter string into an array of valid indices
             let filterIndices = [];
             if (filter) {
                 filterIndices=parseFilterString(filter)
-                                                           
             }
                                    
 
@@ -276,7 +280,6 @@
                 console.warn("No subtitles match the current filter.");
             }
         }
-
 
 
         // Parse filter string into an array of numbers
@@ -367,16 +370,17 @@
                 srtFilename = videoFilename.substr(0, videoFilename.lastIndexOf(".")) + ".srt";
             }
 
-            // Load the SRT file
-            loadSRTFile(srtFilename, paragraphGap,filterFromURL);
-            const urlFilter = getURLParameter('filter', null);
-            applyFilter(urlFilter);
-
-
             // Apply filter when user clicks the button
             const filterButton = document.getElementById('filterButton');
             const filterInput = document.getElementById('filterInput');
 
+            // Load the SRT file
+            loadSRTFile(srtFilename, paragraphGap,filterFromURL);
+            const urlFilter = getURLParameter('filter', null);
+			if (filterButton && filterInput && urlFilter) {
+				filterInput.value=urlFilter
+			}
+            applyFilter(urlFilter);
 
 
         // Apply filter when user clicks the button
