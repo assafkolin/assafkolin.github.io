@@ -208,14 +208,14 @@
                     
                         if (subtitleDiv.classList.contains('filtered-subtitle')) {
                             subtitleDiv.classList.remove('active-subtitle');
-							let tmpTime=parsedSubtitles.endTime[parsedSubtitles.startTime.length-1]
-							for (let j = i; j < parsedSubtitles.startTime.length; j++) {
-								if (!document.getElementById(`subtitle-${j}`).classList.contains('filtered-subtitle')) {
-									tmpTime=parsedSubtitles.startTime[j];
-									break;
-								}
-							}
-							
+                            let tmpTime=parsedSubtitles.endTime[parsedSubtitles.startTime.length-1]
+                            for (let j = i; j < parsedSubtitles.startTime.length; j++) {
+                                if (!document.getElementById(`subtitle-${j}`).classList.contains('filtered-subtitle')) {
+                                    tmpTime=parsedSubtitles.startTime[j];
+                                    break;
+                                }
+                            }
+                            
                             mediaPlayer.currentTime = tmpTime;//parsedSubtitles.endTime[i]
                         } else {
                             subtitleDiv.classList.add('active-subtitle');
@@ -377,9 +377,9 @@
             // Load the SRT file
             loadSRTFile(srtFilename, paragraphGap,filterFromURL);
             const urlFilter = getURLParameter('filter', null);
-			if (filterButton && filterInput && urlFilter) {
-				filterInput.value=urlFilter
-			}
+            if (filterButton && filterInput && urlFilter) {
+                filterInput.value=urlFilter
+            }
             applyFilter(urlFilter);
 
 
