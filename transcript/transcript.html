@@ -185,13 +185,13 @@
 
                     // Now apply the filter after the subtitles are rendered
                     applyFilter(filter);
-                    highlightActiveSubtitle(parsedSubtitles); // Highlight active subtitle
+                    highlightActiveSubtitle(parsedSubtitles,paragraphGap); // Highlight active subtitle
                 })
                 .catch(error => console.error('Error loading SRT file:', error));
         }
 
         // Function to highlight the active subtitle and auto-scroll
-        function highlightActiveSubtitle(parsedSubtitles) {
+        function highlightActiveSubtitle(parsedSubtitles,paragraphGap) {
             const mediaPlayer = getActiveMediaPlayer();
             const bodyDiv = document.getElementById('body');
 
@@ -212,6 +212,12 @@
                             for (let j = i; j < parsedSubtitles.startTime.length; j++) {
                                 if (!document.getElementById(`subtitle-${j}`).classList.contains('filtered-subtitle')) {
                                     tmpTime=parsedSubtitles.startTime[j];
+                                    mediaPlayer.pause();
+                                    var thePromise=null;
+                                    if (thePromise != undefined) {thePromise.then(function(_) {mediaPlayer.pause()});}
+                                    setTimeout(function(){
+                                        thePromise=mediaPlayer.play();
+                                    },paragraphGap*1000);
                                     break;
                                 }
                             }
