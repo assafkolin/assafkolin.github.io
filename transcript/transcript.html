@@ -225,7 +225,9 @@
                             mediaPlayer.currentTime = tmpTime;//parsedSubtitles.endTime[i]
                         } else {
                             subtitleDiv.classList.add('active-subtitle');
-                            subtitleDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            if (!(mediaPlayer.currentTime == 0 || mediaPlayer.paused || mediaPlayer.ended || mediaPlayer.readyState <= 2)) {
+                                subtitleDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
                         }
                     } else {
                         subtitleDiv.classList.remove('active-subtitle');
