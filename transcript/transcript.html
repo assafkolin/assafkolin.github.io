@@ -153,7 +153,7 @@
                     for (let i = 0; i < parsedSubtitles.subtitleText.length; i++) {
                         const subtitleDiv = document.createElement('div');
                         subtitleDiv.classList.add('subtitle-block');
-                        subtitleDiv.textContent = parsedSubtitles.subtitleText[i];
+                        subtitleDiv.innerHTML = parsedSubtitles.subtitleText[i];
                         subtitleDiv.id = `subtitle-${i}`;
                         subtitleDiv.dataset.startTime = parsedSubtitles.startTime[i];
                         subtitleDiv.dataset.endTime = parsedSubtitles.endTime[i];
