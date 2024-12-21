@@ -89,6 +89,9 @@
         </div>
         <input type="text" id="filterInput" placeholder="Enter subtitles to play (e.g., 1,3,5)">
         <button id="filterButton">Apply Filter</button>
+        <input type="range" min="12" max="72" value="16" id="font-size" />
+        <input type="checkbox" value="0" id="rtl-dir" />
+
 
     </div>
 
@@ -153,7 +156,7 @@
                     for (let i = 0; i < parsedSubtitles.subtitleText.length; i++) {
                         const subtitleDiv = document.createElement('div');
                         subtitleDiv.classList.add('subtitle-block');
-                        subtitleDiv.innerHTML = parsedSubtitles.subtitleText[i];
+                        subtitleDiv.innerHTML = parsedSubtitles.subtitleText[i]+" ";
                         subtitleDiv.id = `subtitle-${i}`;
                         subtitleDiv.dataset.startTime = parsedSubtitles.startTime[i];
                         subtitleDiv.dataset.endTime = parsedSubtitles.endTime[i];
@@ -319,11 +322,16 @@
             if (['he-IL'].includes(userLang)) {
                 defaul_dir = 'rtl';
             }
+			
+
+			
             const audioFilename = getURLParameter('audio');
             const videoFilename = getURLParameter('video');
             const paragraphGap = parseFloat(getURLParameter('gap', 1.5));
             const textDirection = getURLParameter('dir', defaul_dir);
             const filterFromURL = getURLParameter('filter', ''); // Get filter from URL
+    		var rtl_cb = document.getElementById('rtl-dir');
+			rtl_cb.checked=(textDirection=="rtl")
 
             const bodyDiv = document.getElementById('body');
             bodyDiv.setAttribute('dir', textDirection);
@@ -398,6 +406,35 @@
                 applyFilter(filter);
             });
         }
+		var slider = document.getElementById('font-size');
+
+		slider.addEventListener('input', function() {
+			var size = slider.value;
+			var elements = document.getElementsByClassName('subtitle-block');
+
+			for (var i = 0; i < elements.length; i++) {
+			  var element = elements[i];
+			  element.style.fontSize = size + "px";
+			}			
+			
+			
+			
+        });		
+
+		var rtl_cb = document.getElementById('rtl-dir');
+
+		rtl_cb.addEventListener('input', function() {
+			var is_rtl = rtl_cb.checked;
+			var textDirection1=is_rtl?"rtl":"ltr"
+            bodyDiv.setAttribute('dir', textDirection1);
+
+            const fileTitle = document.getElementById('fileTitle');
+            const footer_text = document.getElementById('footer_text');
+            footer_text.setAttribute('dir', textDirection1);
+            fileTitle.setAttribute('dir', textDirection1);
+			
+			
+        });		
 
 });
         
